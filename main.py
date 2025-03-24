@@ -10,7 +10,6 @@ scale_length = 0
 snap_distance = 20
 
 
-
 def mouse_callback(event, x, y, flags, param):
     global points, scale_points
     if event == cv2.EVENT_LBUTTONDOWN:
@@ -18,13 +17,15 @@ def mouse_callback(event, x, y, flags, param):
             scale_points.append((x, y))
         else:
             if len(points) > 2 and calculate_distance((x, y), points[0]) < snap_distance:
-              x,y = points[0]
-              points.append((x,y))
+                x, y = points[0]
+                points.append((x, y))
             else:
-              points.append((x, y))
+                points.append((x, y))
+
 
 def calculate_distance(p1, p2):
-    return np.sqrt((p1[0] - p2[0])**2 + (p1[1] - p2[1])**2)
+    return np.sqrt((p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2)
+
 
 def get_scale_length():
     global scale_length
@@ -35,16 +36,19 @@ def get_scale_length():
         except ValueError:
             tk.messagebox.showerror("錯誤", "無效的長度輸入。")
 
+
 def calculate_area():
     global points, scale_points, scale_length, output_text
     if len(points) > 2 and len(scale_points) == 2 and scale_length > 0:
-        scale_pixel_length = np.sqrt((scale_points[0][0] - scale_points[1][0])**2 + (scale_points[0][1] - scale_points[1][1])**2)
+        scale_pixel_length = np.sqrt(
+            (scale_points[0][0] - scale_points[1][0]) ** 2 + (scale_points[0][1] - scale_points[1][1]) ** 2)
         pixel_to_real_ratio = scale_length / scale_pixel_length
         area_pixels = cv2.contourArea(np.array([points]))
-        area_real = area_pixels * (pixel_to_real_ratio**2)
+        area_real = area_pixels * (pixel_to_real_ratio ** 2)
         output_text.insert(tk.END, f"標注區域的面積為：{area_real:.2f} 平方米\n")
     else:
         output_text.insert(tk.END, "請先標注區域邊界和比例尺。\n")
+
 
 def reset():
     global image, clone, points, scale_points, scale_length, output_text
@@ -53,8 +57,10 @@ def reset():
     scale_points = []
     scale_length = 0
     output_text.delete(1.0, tk.END)
-    output_text.insert(tk.END,f"1. 在圖上選定兩點畫出比例尺，然後點擊‘輸入比例尺長度’並輸入長度。 2. 畫出計算面積範圍 3. 點擊‘計算面積’\n")
+    output_text.insert(tk.END,
+                       f"1. 在圖上選定兩點畫出比例尺，然後點擊‘輸入比例尺長度’並輸入長度。 \n2. 畫出計算面積範圍 \n3. 點擊‘計算面積’\n")
     output_text.insert(tk.END, f"\n")
+
 
 # 載入圖像
 image = cv2.imread("floor_plan.png")
@@ -83,7 +89,8 @@ reset_button.pack(side=tk.LEFT, padx=5)
 output_text = scrolledtext.ScrolledText(root, width=40, height=10)
 output_text.pack(padx=10, pady=10)
 
-output_text.insert(tk.END, f"1. 在圖上選定兩點畫出比例尺，然後點擊‘輸入比例尺長度’並輸入長度。 2. 畫出計算面積範圍 3. 點擊‘計算面積’\n")
+output_text.insert(tk.END,
+                   f"1. 在圖上選定兩點畫出比例尺，然後點擊‘輸入比例尺長度’並輸入長度。 \n2. 畫出計算面積範圍 \n3. 點擊‘計算面積’\n")
 output_text.insert(tk.END, f"\n")
 
 
@@ -95,6 +102,7 @@ def update_image():
         cv2.line(temp_image, scale_points[0], scale_points[1], (255, 0, 0), 2)
     cv2.imshow("image", temp_image)
     root.after(10, update_image)
+
 
 update_image()
 root.mainloop()
